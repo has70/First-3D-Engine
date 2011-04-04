@@ -26,8 +26,8 @@ Engine::Engine(HINSTANCE hInstance): Window(hInstance)
 
 Engine::~Engine()
 {
-	if( md3dDevice )
-		md3dDevice->ClearState();
+	if( d3dDevice )
+		d3dDevice->ClearState();
 }
 
 void Engine::initApp()
@@ -51,7 +51,7 @@ void Engine::drawScene()
 
 	// We specify DT_NOCLIP, so we do not care about width/height of the rect.
 	RECT R = {5, 5, 0, 0};
-	mFont->DrawText(0, mFrameStats.c_str(), -1, &R, DT_NOCLIP, BLACK);
+	font_tf2_medium->DrawText(0, text_fps.c_str(), -1, &R, DT_NOCLIP, WHITE);
 
-	mSwapChain->Present(0, 0);
+	swapChain->Present(0, 0);
 }

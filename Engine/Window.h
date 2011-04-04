@@ -5,6 +5,7 @@
 #include "Utilities.h"
 #include "GameTimer.h"
 #include <string>
+using namespace std;
 
 
 class Window
@@ -31,29 +32,31 @@ protected:
 	
 protected:
 
-	HINSTANCE mhAppInst;
-	HWND      mhMainWnd;
-	bool      mAppPaused;
-	bool      mMinimized;
-	bool      mMaximized;
-	bool      mResizing;
+	HINSTANCE hAppInst;
+	HWND      hMainWnd;
+	bool      paused;
+	bool      minimized;
+	bool      maximized;
+	bool      resizing;
 
 	GameTimer timer;
 
-	std::wstring mFrameStats;
+	wstring text_fps;
  
-	ID3D10Device*    md3dDevice;
-	IDXGISwapChain*  mSwapChain;
-	ID3D10Texture2D* mDepthStencilBuffer;
-	ID3D10RenderTargetView* mRenderTargetView;
-	ID3D10DepthStencilView* mDepthStencilView;
-	ID3DX10Font* mFont;
+	ID3D10Device*    d3dDevice;
+	IDXGISwapChain*  swapChain;
+	ID3D10Texture2D* depthStencilBuffer;
+	ID3D10RenderTargetView* renderTargetView;
+	ID3D10DepthStencilView* depthStencilView;
+	ID3DX10Font* font_tf2_small;
+	ID3DX10Font* font_tf2_medium;
+	ID3DX10Font* font_tf2_large;
 
-	std::wstring mMainWndCaption;
-	D3D10_DRIVER_TYPE md3dDriverType;
-	D3DXCOLOR mClearColor;
-	int mClientWidth;
-	int mClientHeight;
+	wstring mainWndCaption;
+	D3D10_DRIVER_TYPE d3dDriverType;
+	D3DXCOLOR clearColor;
+	int windowWidth;
+	int windowHeight;
 };
 
 #endif
