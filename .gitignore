@@ -1,4 +1,5 @@
 #from git extensions
+*.obj
 *.exe
 *.exp
 *.pdb

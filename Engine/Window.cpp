@@ -1,3 +1,4 @@
+#include "resource.h"
 #include "Window.h"
 #include <sstream>
 
@@ -39,7 +40,7 @@ Window::Window(HINSTANCE hInstance)
 	renderTargetView   = 0;
 	depthStencilView   = 0;
 
-	mainWndCaption = L"Modus Vivendi";
+	mainWndCaption = L"Vivarium";
 	d3dDriverType  = D3D10_DRIVER_TYPE_HARDWARE;
 	clearColor     = D3DXCOLOR(CRIMSON);
 	windowWidth    = 800;
@@ -341,23 +342,29 @@ LRESULT Window::msgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void Window::initMainWindow()
 {
+	//Create windowclass
 	WNDCLASS wc;
 	wc.style         = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc   = MainWndProc; 
 	wc.cbClsExtra    = 0;
 	wc.cbWndExtra    = 0;
 	wc.hInstance     = hAppInst;
-	wc.hIcon         = LoadIcon(0, IDI_APPLICATION);
+	//wc.hIcon         = LoadIcon(0, IDI_APPLICATION);
 	wc.hCursor       = LoadCursor(0, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
 	wc.lpszMenuName  = 0;
 	wc.lpszClassName = L"D3DWndClassName";
 
+	//Use custom icon
+	wc.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
+
+	//Register windowclass
 	if( !RegisterClass(&wc) )
 	{
 		MessageBox(0, L"RegisterClass FAILED", 0, 0);
 		PostQuitMessage(0);
 	}
+
 
 	// Compute window rectangle dimensions based on requested client area dimensions.
 	RECT R = { 0, 0, windowWidth, windowHeight };
