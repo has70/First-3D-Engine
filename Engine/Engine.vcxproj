@@ -82,6 +82,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Box.h" />
+    <ClInclude Include="DrawManager.h" />
+    <ClInclude Include="DrawFonts.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Utilities.h" />
@@ -89,9 +92,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shader.fx" />
     <None Include="vivarium.ico" />
   </ItemGroup>
   <ItemGroup>

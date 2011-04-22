@@ -1,7 +1,11 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <d3dx10.h>
 #include <dxerr.h>
 #include <cassert>
 #include <vector>
+using namespace std;
 
 //Error checker
 #if defined(DEBUG) | defined(_DEBUG)
@@ -22,7 +26,11 @@
 #endif
 
 //Release COM objects
-#define ReleaseCOM(x){ if(x){ x->Release();x = 0; } }
+#define ReleaseCOM(x){ if(x){ x->Release();x = 0;}}
+
+//Build FX
+//void buildEffect(string fileName, ID3D10Device* device, ID3D10Effect* effect);
+wstring string_to_wstring(string in);
 
 //Constants
 const float INFINITY = FLT_MAX;
@@ -40,3 +48,6 @@ const D3DXCOLOR CYAN(0.1f,0.7f,0.7f,1.0f);
 const D3DXCOLOR MAGENTA(1.0f, 0.0f, 1.0f, 1.0f);
 
 const D3DXCOLOR CRIMSON(0.8f, 0.1f, 0.1f, 1.0f);
+
+
+#endif
