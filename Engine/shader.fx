@@ -23,7 +23,7 @@ VS_OUT VS(VS_IN vIn)
 
 	// Transform to homogeneous clip space.
 	float3 test=vIn.offPos;
-	test=float3(1.0f,1.0f,1.0f);
+	test=float3(0.0f,0.0f,1.0f);
 	test=vIn.offPos;
 	vOut.oPosH = mul(float4(vIn.iPosL+test, 1.0f), gWVP);
 	

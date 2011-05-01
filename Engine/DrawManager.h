@@ -85,30 +85,34 @@ public:
 		for(unsigned i=0; i<techDesc.Passes; i++)
 		{
 			ID3D10EffectPass* pass = technique->GetPassByIndex(i);
-			device->DrawIndexedInstanced(36,1,0,0,0);
+			
 
-			for(int x=0; x<1; x++)
-			{
-				//Translate
-				D3DXMATRIX mat_tmp;
-				D3DXVECTOR3 v((float)x,0.0f,(float)x*2);
-				if(x % 2)
-					v=D3DXVECTOR3((float)-x,0.0f,(float)x*2);
-				D3DXMatrixTranslation(&mat_tmp,v.x,v.y,v.z);
+			//for(int x=0; x<10000; x++)
+			//{
+			//	//Translate
+			//	D3DXMATRIX mat_tmp;
+			//	D3DXVECTOR3 v((float)x,0.0f,(float)x*2);
+			//	if(x % 2)
+			//		v=D3DXVECTOR3((float)-x,0.0f,(float)x*2);
+			//	D3DXMatrixTranslation(&mat_tmp,v.x,v.y,v.z);
 
-				//Rotate
+			//	//Rotate
 
-				mWVP = world*mat_tmp*mView*mProj;
-				wvp->SetMatrix((float*)&mWVP);
+			//	mWVP = world*mat_tmp*mView*mProj;
+			//	wvp->SetMatrix((float*)&mWVP);
 
-				pass->Apply(0);
-				box.draw();
-			}
+			//	pass->Apply(0);
+			//	box.draw();
+			//}
+			mWVP = world*mView*mProj;
+			wvp->SetMatrix((float*)&mWVP);
+			pass->Apply(0);
+			box.draw();
 		}
 
 		drawText.drawFPS();
 	};
-
+	UINT test;
 	void createFX()
 	{
 		buildEffect("shader.fx");

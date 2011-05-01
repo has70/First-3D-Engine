@@ -9,43 +9,49 @@ struct Vertex
 	D3DXCOLOR   color;
 };
 
-struct OffPos
+struct Instance
 {
-	D3DXVECTOR3 off;
+	D3DXVECTOR3 offset;
 };
 
 class Box
 {
 private:
-	int mNumVertices;
-	int mNumFaces;
-	ID3D10Effect* effect;
+	int nrOfVertices;
+	int nrOfFaces;
+	int nrOfInstances;
 
-	ID3D10Device* md3dDevice;
-	ID3D10Buffer* mVB[2];
-	ID3D10Buffer* mIB;
+	ID3D10Effect* effect;
+	ID3D10Device* device;
+	ID3D10Buffer* vertexBuffer[2];
+	ID3D10Buffer* indexBuffer;
 public:
 	Box()
 	{
-		mVB[0]=0;
-		mVB[1]=0;
-		mIB=0;
+		vertexBuffer[0]=0;
+		vertexBuffer[1]=0;
+		indexBuffer=0;
 	};
 	~Box()
 	{
-		ReleaseCOM(mVB[0]);
-		ReleaseCOM(mVB[1]);
-		ReleaseCOM(mIB);
+		ReleaseCOM(vertexBuffer[0]);
+		ReleaseCOM(vertexBuffer[1]);
+		ReleaseCOM(indexBuffer);
 	};
 
-	void init(ID3D10Device* device, float scale)
+	void init(ID3D10Device* _device, float scale)
 	{
-		md3dDevice = device;
+		//Save path to device (for later use)
+		device = _device;
 
-		mNumVertices = 8;
-		mNumFaces    = 12; // 2 per quad
 
-		// Create vertex buffer
+		//========
+		//Vertices
+		//========
+
+		//Create vertices
+		nrOfVertices = 8;
+		nrOfFaces    = 12; //2 per quad
 		Vertex vertices[] =
 		{
 			{D3DXVECTOR3(-1.0f, -1.0f, -1.0f), WHITE},
@@ -57,114 +63,131 @@ public:
 			{D3DXVECTOR3(+1.0f, +1.0f, +1.0f), CYAN},
 			{D3DXVECTOR3(+1.0f, -1.0f, +1.0f), MAGENTA},
 		};
-
-		OffPos off[] =
-		{
-			{D3DXVECTOR3(1.0f, 1.0f, 1.0f)},
-		/*	{D3DXVECTOR3(-1.0f, +1.0f, -1.0f)},
-			{D3DXVECTOR3(+1.0f, +1.0f, -1.0f)},
-			{D3DXVECTOR3(+1.0f, -1.0f, -1.0f)},
-			{D3DXVECTOR3(-1.0f, -1.0f, +1.0f)},
-			{D3DXVECTOR3(-1.0f, +1.0f, +1.0f)},
-			{D3DXVECTOR3(+1.0f, +1.0f, +1.0f)},
-			{D3DXVECTOR3(+1.0f, -1.0f, +1.0f)},*/
-
-			/*{D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-			{D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-			{D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-			{D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-			{D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-			{D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-			{D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-			{D3DXVECTOR3(0.0f, 0.0f, 0.0f)},*/
-		};
-
-		// Scale the box.
-		for(int i = 0; i < mNumVertices; ++i)
+		for(int i=0; i<nrOfVertices; i++)
 			vertices[i].pos *= scale;
 
-		// Scale the box.
-		for(int i = 0; i < mNumVertices; ++i)
-			off[i].off *= 1.0f;
+		//Create buffer
+		D3D10_BUFFER_DESC vbd;
+		vbd.Usage = D3D10_USAGE_DYNAMIC;
+		vbd.ByteWidth = sizeof(Vertex)*nrOfVertices;
+		vbd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
+		vbd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+		vbd.MiscFlags = 0;
+		D3D10_SUBRESOURCE_DATA vertexInit;
+		vertexInit.pSysMem = vertices;
+		HR(device->CreateBuffer(&vbd, &vertexInit, &vertexBuffer[0]));
 
-		//Vertexbuffer
+
+		//=========
+		//Instances
+		//=========
+
+		//Instances vertices
+		nrOfInstances = 8;
+		Instance instances[] =
+		{
+			
+			{D3DXVECTOR3(-1.0f, +1.0f, -1.0f)},
+			{D3DXVECTOR3(-1.0f, -1.0f, -1.0f)},
+			{D3DXVECTOR3(+1.0f, +1.0f, -1.0f)},
+			{D3DXVECTOR3(+1.0f, -1.0f, -1.0f)},
+			{D3DXVECTOR3(-1.0f, +1.0f, +1.0f)},
+			{D3DXVECTOR3(-1.0f, -1.0f, +1.0f)},
+			{D3DXVECTOR3(+1.0f, +1.0f, +1.0f)},
+			{D3DXVECTOR3(+1.0f, -1.0f, +1.0f)},
+		};
+		for(int i=0; i<nrOfInstances; i++)
+			instances[i].offset *= 1.3f;
+
+		//Create buffer
 		if(true)
 		{
-			D3D10_BUFFER_DESC vbd;
-			vbd.Usage = D3D10_USAGE_IMMUTABLE;
-			vbd.ByteWidth = sizeof(Vertex) * mNumVertices;
-			vbd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
-			vbd.CPUAccessFlags = 0;
-			vbd.MiscFlags = 0;
-			D3D10_SUBRESOURCE_DATA vinitData;
-			vinitData.pSysMem = vertices;
-			HR(md3dDevice->CreateBuffer(&vbd, &vinitData, &mVB[0]));
+		D3D10_BUFFER_DESC ibd;
+		ibd.Usage = D3D10_USAGE_DYNAMIC;
+		ibd.ByteWidth = sizeof(Instance)*nrOfInstances;
+		ibd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
+		ibd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+		ibd.MiscFlags = 0;
+		D3D10_SUBRESOURCE_DATA instanceInit;
+		instanceInit.pSysMem = instances;
+		HR(device->CreateBuffer(&ibd, &instanceInit, &vertexBuffer[1]));
 		}
 
-		//Offset buffer
-		if(true)
+
+		//=====
+		//Index
+		//=====
+
+		//Index buffer
+		int indices[] = 
 		{
-			D3D10_BUFFER_DESC vbd;
-			vbd.Usage = D3D10_USAGE_IMMUTABLE;
-			vbd.ByteWidth = sizeof(OffPos) * 1;
-			vbd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
-			vbd.CPUAccessFlags = 0;
-			vbd.MiscFlags = 0;
-			D3D10_SUBRESOURCE_DATA vinitData;
-			vinitData.pSysMem = off;
-			HR(md3dDevice->CreateBuffer(&vbd, &vinitData, &mVB[1]));
-		}
-
-
-		// Create the index buffer
-
-		int indices[] = {
-			// front face
+			//Front
 			0, 1, 2,
 			0, 2, 3,
-
-			// back face
+			//Back
 			4, 6, 5,
 			4, 7, 6,
-
-			// left face
+			//Left
 			4, 5, 1,
 			4, 1, 0,
-
-			// right face
+			//Right
 			3, 2, 6,
 			3, 6, 7,
-
-			// top face
+			//Top
 			1, 5, 6,
 			1, 6, 2,
-
-			// bottom face
+			//Bottom
 			4, 0, 3, 
 			4, 3, 7
 		};
+
+
+		////Create buffer
+		//D3D10_BUFFER_DESC ixbd;
+		//ixbd.Usage = D3D10_USAGE_IMMUTABLE;
+		//ixbd.ByteWidth = sizeof(int)*nrOfFaces*3;
+		//ixbd.BindFlags = D3D10_BIND_INDEX_BUFFER;
+		//ixbd.CPUAccessFlags = 0;
+		//ixbd.MiscFlags = 0;
+		//D3D10_SUBRESOURCE_DATA indexInit;
+		//instanceInit.pSysMem = indices;
+		//HR(device->CreateBuffer(&ixbd, &indexInit, &indexBuffer));
 
 		if(true)
 		{
 			D3D10_BUFFER_DESC ibd;
 			ibd.Usage = D3D10_USAGE_IMMUTABLE;
-			ibd.ByteWidth = sizeof(int) * mNumFaces*3;
+			ibd.ByteWidth = sizeof(int) * nrOfFaces*3;
 			ibd.BindFlags = D3D10_BIND_INDEX_BUFFER;
 			ibd.CPUAccessFlags = 0;
 			ibd.MiscFlags = 0;
 			D3D10_SUBRESOURCE_DATA iinitData;
 			iinitData.pSysMem = indices;
-			HR(md3dDevice->CreateBuffer(&ibd, &iinitData, &mIB));
+			HR(device->CreateBuffer(&ibd, &iinitData, &indexBuffer));
 		}
 	};
 	void draw()
 	{
-		unsigned stride = sizeof(Vertex);
-		unsigned offset = 0;
-		md3dDevice->IASetVertexBuffers(0, 2, mVB, &stride, &offset);
-		md3dDevice->IASetIndexBuffer(mIB, DXGI_FORMAT_R32_UINT, 0);
-		md3dDevice->DrawIndexed(mNumFaces*3, 0, 0);
+		UINT strides[2] = {sizeof(Vertex),sizeof(Instance)};
+		UINT offsets[2] = {0,0};
+
+		device->IASetVertexBuffers(0, 2, vertexBuffer, strides, offsets);
+		device->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		device->DrawIndexedInstanced(nrOfFaces*3,8,0,0,0);
 	};
 };
 
 #endif
+
+//if(true)
+//{
+//	D3D10_BUFFER_DESC ibd;
+//	ibd.Usage = D3D10_USAGE_IMMUTABLE;
+//	ibd.ByteWidth = sizeof(int) * mNumFaces*3;
+//	ibd.BindFlags = D3D10_BIND_INDEX_BUFFER;
+//	ibd.CPUAccessFlags = 0;
+//	ibd.MiscFlags = 0;
+//	D3D10_SUBRESOURCE_DATA iinitData;
+//	iinitData.pSysMem = indices;
+//	HR(md3dDevice->CreateBuffer(&ibd, &iinitData, &mIB));
+//}

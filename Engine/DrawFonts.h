@@ -54,6 +54,10 @@ public:
 		D3DX10CreateFontIndirect(device, &fontDesc, &font_tf2_medium);
 		fontDesc.Height = 45;
 		D3DX10CreateFontIndirect(device, &fontDesc, &font_tf2_large);
+
+
+		/*D3DX10CreateFont(device, 35, 0, FW_BOLD, 1, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY,  DEFAULT_PITCH | FF_DONTCARE, TEXT("Helvetica"), &font_tf2_medium);*/
+               
 	};
 	void update(float dt)
 	{
@@ -90,6 +94,11 @@ public:
 		//Draw text
 		RECT R = {5, 5, 0, 0};
 		font_tf2_medium->DrawText(0, text_fps.c_str(), -1, &R, DT_NOCLIP, WHITE);
+
+		/*wstring text = L"This is text!";
+		RECT R = {0, 0, 0, 0};
+		SetRectEmpty(&R);
+		font_tf2_medium->DrawText(0, text.c_str(), -1, &R, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));*/
 	};
 };
 
